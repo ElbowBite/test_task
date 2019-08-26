@@ -6,38 +6,26 @@ import * as actions from '../../store/actions';
 import styles from './TaskList.styles';
 import buttons from '../UI/PriorityButtons.styles';
 
-const TaskList = (props) => {
-
-  const { classes } = props;
-  const { list } = props;
+const TaskList = ({
+  list,
+  classes,
+  fetchList,
+  taskRemoval,
+  onTaskPriorityUpdate
+}) => {
 
   useEffect(() => {
-    fetch('/api/getList')
-      .then((res) => res.json())
-      .then((list) => props.onListRecieved(list))
+    fetchList();
   }, []);
 
   const handlePriorityUpdate = (taskId, newPriority) => {
-    fetch('/api/updatePriority', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        id: taskId,
-        priority: newPriority
-      })
-    })
-      .then((res) => res.json())
-      .then((list) => props.onListRecieved(list))
+    onTaskPriorityUpdate(taskId, newPriority);
+    fetchList();
   };
 
   const handleTaskRemoval = (taskId) => {
-    fetch('/api/removeTask', {
-      method: 'DELETE',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ id: taskId })
-    })
-      .then((res) => res.json())
-      .then((list) => props.onListRecieved(list))
+    taskRemoval(taskId);
+    fetchList();
   };
 
   return (
@@ -86,17 +74,15 @@ const TaskList = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = (state) => ({
     list: state.list
-  };
-};
+});
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onListRecieved: (list) => dispatch(actions.onListRecieved(list))
-  };
-};
+const mapDispatchToProps = (dispatch) => ({
+    fetchList: () => dispatch(actions.fetchList()),
+    taskRemoval: (taskId) => dispatch(actions.taskRemoval(taskId)),
+    onTaskPriorityUpdate: (taskId, newPriority) => dispatch(actions.taskPriorityUpdate(taskId, newPriority))
+});
 
 const styledComp = injectSheet(buttons)(injectSheet(styles)(TaskList));
  

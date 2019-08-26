@@ -1,3 +1,5 @@
+import * as actionTypes from './actionTypes';
+
 const initState = {
   list: [
     {
@@ -5,37 +7,17 @@ const initState = {
       performer: '',
       priority: 1
     }
-  ],
-  newTaskText: '',
-  newTaskPerformer: '',
-  newTaskPriority: 1
+  ]
 }
 
 const reducer = (state = initState, action) => {
   switch (action.type) {
-    case 'ON_LIST_RECIEVED':
+    case actionTypes.LIST_FETCH_SUCCESS: {
       return {
         ...state,
-        list: action.list,
-        newTaskText: '',
-        newTaskPerformer: '',
-        newTaskPriority: 1
+        list: action.list
       }
-    case 'ON_TASK_TEXT_CHANGE':
-      return {
-        ...state,
-        newTaskText: action.newText
-      }
-    case 'ON_TASK_PERFORMER_CHANGE':
-      return {
-        ...state,
-        newTaskPerformer: action.newPerformer
-      }
-    case 'ON_TASK_PRIORITY_CHANGE':
-      return {
-        ...state,
-        newTaskPriority: action.newPriority
-      }
+    }
     default:
       return state;
   }

@@ -6,30 +6,25 @@ import * as actions from '../../store/actions';
 import styles from './NewTaskAdder.styles';
 import buttons from '../UI/PriorityButtons.styles';
 
-const NewTaskAdder = (props) => {
+const NewTaskAdder = ({
+  classes,
+  fetchList,
+  onTaskAddition
+}) => {
 
-  const classes = props.classes;
-
-  const [curPriority, changeCurPriority] = useState(1);
-  const [taskFilled, updateTaskFilled] = useState(false);
-  const [performerFilled, updatePerformerFilled] = useState(false);
+  const [newTaskText, onTaskTextChange] = useState('');
+  const [newTaskPerformer, onTaskPerformerChange] = useState('');
+  const [newTaskPriority, onTaskPriorityChange] = useState(1);
 
   const addNewTask = (e) => {
-    if (props.newTaskText === '' || props.newTaskPerformer === '') {
+    if (newTaskText === '' || newTaskPerformer === '') {
       alert('Fill all fields.')
     } else {
-      fetch('/api/updateTask', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          task: props.newTaskText,
-          performer: props.newTaskPerformer,
-          priority: props.newTaskPriority
-        })
-      })
-        .then((res) => res.json())
-        .then(list => props.onListRecieved(list))
-      changeCurPriority(1);
+      onTaskAddition(newTaskText, newTaskPerformer, newTaskPriority);
+      fetchList();
+      onTaskTextChange('');
+      onTaskPerformerChange('');
+      onTaskPriorityChange(1);
     }
     e.preventDefault();
   };
@@ -38,8 +33,7 @@ const NewTaskAdder = (props) => {
     if (e.target.value.length >= 40) {
       alert('Limit of 40 characters reached!');
     } else {
-      updateTaskFilled(e.target.value.length);
-      props.onTaskTextChange(e.target.value);
+      onTaskTextChange(e.target.value);
     }
   };
 
@@ -47,20 +41,17 @@ const NewTaskAdder = (props) => {
     if (e.target.value.length >= 40) {
       alert('Limit of 40 characters reached!')
     } else {
-      updatePerformerFilled(e.target.value.length);
-      props.onTaskPerformerChange(e.target.value);
+      onTaskPerformerChange(e.target.value);
     }
   };
 
   const handlePriorityInc = (e) => {
-    changeCurPriority(curPriority + 1);
-    props.onTaskPriorityChange(curPriority + 1);
+    onTaskPriorityChange(newTaskPriority + 1);
     e.preventDefault();
   };
 
   const handlePriorityDec = (e) => {
-    changeCurPriority(curPriority - 1);
-    props.onTaskPriorityChange(curPriority - 1);
+    onTaskPriorityChange(newTaskPriority - 1);
     e.preventDefault();
   };
 
@@ -70,14 +61,14 @@ const NewTaskAdder = (props) => {
         <input
           type="text"
           placeholder="Enter new task"
-          value={props.newTaskText}
+          value={newTaskText}
           onChange={handleTaskTextChange}
           className={classes.TaskText}
         />
         <input
           type="text"
           placeholder="Enter performer of a new task"
-          value={props.newTaskPerformer}
+          value={newTaskPerformer}
           onChange={handleTaskPerformerChange}
           className={classes.TaskText}
         />
@@ -88,22 +79,22 @@ const NewTaskAdder = (props) => {
           name="incPriority"
           className={classes.incPriority}
           onClick={handlePriorityInc}
-          disabled={curPriority === 10}
+          disabled={newTaskPriority === 10}
         />
         <span className={classes.Span}>
-          {curPriority}
+          {newTaskPriority}
         </span>
         <button
           name="decPriority"
           className={classes.decPriority}
           onClick={handlePriorityDec}
-          disabled={curPriority === 1}
+          disabled={newTaskPriority === 1}
         />
         <input
           type="submit"
           value="Add new task"
           className={classes.SubmitButton}
-          disabled={!taskFilled || !performerFilled}
+          disabled={!newTaskText || !newTaskPerformer}
         />
       </form>
     </div>
@@ -120,10 +111,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onListRecieved: (list) => dispatch(actions.onListRecieved(list)),
-    onTaskTextChange: (newText) => dispatch(actions.onTaskTextChange(newText)),
-    onTaskPerformerChange: (newText) => dispatch(actions.onTaskPerformerChange(newText)),
-    onTaskPriorityChange: (newPriority) => dispatch(actions.onTaskPriorityChange(newPriority))
+    fetchList: () => dispatch(actions.fetchList()),
+    onTaskAddition: (newTaskText, newTaskPerformer, newTaskPriority) => 
+      dispatch(actions.taskAddition(newTaskText, newTaskPerformer, newTaskPriority))
   };
 };
 
