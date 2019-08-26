@@ -9,6 +9,7 @@ const styles = {
     border: 'none',
     backgroundSize: '100%',
     cursor: 'pointer',
+    outline: 'none',
     '&:disabled': {
       opacity: '0.5',
       cursor: 'not-allowed'
