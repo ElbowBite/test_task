@@ -11,8 +11,11 @@ const styles = {
     height: '30px',
     display: 'block',
     fontSize: '20px',
-    outline: 'none',
     margin: '5px auto'
+  },
+  Span: {
+    fontWeight: 'bold',
+    width: '20px'
   },
   SubmitButton: {
     width: '30%',
@@ -21,7 +24,6 @@ const styles = {
     display: 'block',
     margin: '10px auto',
     cursor: 'pointer',
-    outline: 'none',
     '&:disabled': {
       opacity: '0.5',
       cursor: 'not-allowed'

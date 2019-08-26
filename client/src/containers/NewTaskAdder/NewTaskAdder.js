@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import injectSheet from 'react-jss';
 import { connect } from 'react-redux';
-import { Form, Field } from 'react-final-form';
 
-import { validate } from './validate';
 import * as actions from '../../store/actions';
 import styles from './NewTaskAdder.styles';
 import buttons from '../UI/PriorityButtons.styles';
@@ -13,80 +11,93 @@ const NewTaskAdder = ({
   fetchList,
   onTaskAddition
 }) => {
-  const onSubmit = (vals) => {
-    onTaskAddition(vals);
-    fetchList();
+
+  const [newTaskText, onTaskTextChange] = useState('');
+  const [newTaskPerformer, onTaskPerformerChange] = useState('');
+  const [newTaskPriority, onTaskPriorityChange] = useState(1);
+
+  const addNewTask = (e) => {
+    if (newTaskText === '' || newTaskPerformer === '') {
+      alert('Fill all fields.')
+    } else {
+      onTaskAddition(newTaskText, newTaskPerformer, newTaskPriority);
+      fetchList();
+      onTaskTextChange('');
+      onTaskPerformerChange('');
+      onTaskPriorityChange(1);
+    }
+    e.preventDefault();
+  };
+
+  const handleTaskTextChange = (e) => {
+    if (e.target.value.length >= 40) {
+      alert('Limit of 40 characters reached!');
+    } else {
+      onTaskTextChange(e.target.value);
+    }
+  };
+
+  const handleTaskPerformerChange = (e) => {
+    if (e.target.value.length >= 40) {
+      alert('Limit of 40 characters reached!')
+    } else {
+      onTaskPerformerChange(e.target.value);
+    }
+  };
+
+  const handlePriorityInc = (e) => {
+    onTaskPriorityChange(newTaskPriority + 1);
+    e.preventDefault();
+  };
+
+  const handlePriorityDec = (e) => {
+    onTaskPriorityChange(newTaskPriority - 1);
+    e.preventDefault();
   };
 
   return (
     <div>
-      <Form
-        onSubmit={onSubmit}
-        validate={validate}
-        initialValues={{
-          newTaskText: '',
-          newTaskPerformer: '',
-          newTaskPriority: 1,
-        }}
-        mutators={{
-          increment: ([propToUpdate], state, { changeValue }) => {
-            changeValue(state, propToUpdate, () => ++state.formState.values.newTaskPriority )
-          },
-          decrement: ([propToUpdate], state, { changeValue }) => {
-            changeValue(state, propToUpdate, () => --state.formState.values.newTaskPriority)
-          }
-        }}
-      >
-        {({ handleSubmit, valid, values, form: { mutators } }) => (
-          <div className={classes.NewTaskForm}>
-            <Field
-              component="input"
-              name="newTaskText"
-              className={classes.TaskText}
-              type="text"
-              placeholder="Enter new task"
-            />
-            <Field
-              component="input"
-              name="newTaskPerformer"
-              className={classes.TaskText}
-              type="text"
-              placeholder="Enter performer of a new task"
-            />
-            <Field
-              component="input"
-              name="newTaskPriority"
-              readOnly
-              className={classes.span}
-              style={{ display: 'none' }}
-            />
-            <span className={classes.Span}>
-              Priority
-            </span>
-            <button
-              className={classes.incPriority}
-              onClick={() => mutators.increment('newTaskPriority')}
-              disabled={values.newTaskPriority === 10}
-            />
-            <span className={classes.Span}>
-              {values.newTaskPriority}
-            </span>
-            <button
-              className={classes.decPriority}
-              onClick={() => mutators.decrement('newTaskPriority')}
-              disabled={values.newTaskPriority === 1}
-            />
-            <input
-              disabled={!valid}
-              type="submit"
-              onClick={handleSubmit}
-              className={classes.SubmitButton}
-              value="Add new task"  
-            />
-          </div>
-        )}
-      </Form>
-     </div>
+      <form className={classes.NewTaskForm} onSubmit={addNewTask}>
+        <input
+          type="text"
+          placeholder="Enter new task"
+          value={newTaskText}
+          onChange={handleTaskTextChange}
+          className={classes.TaskText}
+        />
+        <input
+          type="text"
+          placeholder="Enter performer of a new task"
+          value={newTaskPerformer}
+          onChange={handleTaskPerformerChange}
+          className={classes.TaskText}
+        />
+        <span className={classes.Span}>
+          Priority
+        </span>
+        <button
+          name="incPriority"
+          className={classes.incPriority}
+          onClick={handlePriorityInc}
+          disabled={newTaskPriority === 10}
+        />
+        <span className={classes.Span}>
+          {newTaskPriority}
+        </span>
+        <button
+          name="decPriority"
+          className={classes.decPriority}
+          onClick={handlePriorityDec}
+          disabled={newTaskPriority === 1}
+        />
+        <input
+          type="submit"
+          value="Add new task"
+          className={classes.SubmitButton}
+          disabled={!newTaskText || !newTaskPerformer}
+        />
+      </form>
+    </div>
   );
 }
 
@@ -98,10 +109,13 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchList: () => dispatch(actions.fetchList()),
-    onTaskAddition: (vals) => dispatch(actions.taskAddition(vals)),
-});
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchList: () => dispatch(actions.fetchList()),
+    onTaskAddition: (newTaskText, newTaskPerformer, newTaskPriority) => 
+      dispatch(actions.taskAddition(newTaskText, newTaskPerformer, newTaskPriority))
+  };
+};
 
 const styledComp = injectSheet(buttons)(injectSheet(styles)(NewTaskAdder));
 
