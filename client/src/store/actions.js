@@ -19,7 +19,7 @@ export const fetchList = () => {
   }
 };
 
-export const taskAddition = (newTaskText, newTaskPerformer, newTaskPriority) => {
+export const taskAddition = ({newTaskText, newTaskPerformer, newTaskPriority}) => {
   return dispatch => {
     fetch('/api/updateTask', {
       method: 'POST',

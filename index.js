@@ -23,33 +23,17 @@ let lastId = 0;
 
 // Comparison function for sorting
 const compare = (a, b) => {
-  let comparison = 0;
-  const aPriority = a.priority;
-  const bPriority = b.priority;
-  if (aPriority > bPriority) {
-    comparison = -1;
-  } else if (aPriority < bPriority) {
-    comparison = 1;
-  } else if (aPriority === bPriority) {
-      const aId = a.id;
-      const bId = b.id;
-      if (aId > bId) {
-        comparison = 1;
-      } else if (aId < bId) {
-        comparison = -1;
-    }
+  if (a.priority === b.priority) {
+    return a.id > b.id
+  } else {
+    return a.priority < b.priority
   }
-  return comparison;
 }
 
 // Priority update function
 const updatePriority = ( taskToUpdate, newPriority ) => {
-  for (let i in list) {
-    if (list[i].id == taskToUpdate) {
-       list[i].priority = newPriority;
-       break;
-    }
-  }
+  const index = list.findIndex(el => el.id === taskToUpdate);
+  list[index].priority = newPriority;
 };
 
 // Task removing function

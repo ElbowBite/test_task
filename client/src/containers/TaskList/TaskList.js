@@ -13,7 +13,6 @@ const TaskList = ({
   taskRemoval,
   onTaskPriorityUpdate
 }) => {
-
   useEffect(() => {
     fetchList();
   }, []);
@@ -32,11 +31,9 @@ const TaskList = ({
     <table className={classes.TaskList}>
       {list.length ? (
         <>
-          <tbody>
-            <tr>
-              <th>Task</th><th>Performer</th><th>Priority</th><th>Delete</th>
-            </tr>
-              {list.map((item) => (
+          <th>Task</th><th>Performer</th><th>Priority</th><th>Delete</th>
+            {list.map((item) => (
+              <tbody>
                   <tr key={item.id}>
                     <td>
                       {item.task}
@@ -64,8 +61,8 @@ const TaskList = ({
                       />
                     </td>
                   </tr>
-              ))}
-          </tbody>
+              </tbody>
+            ))}
         </>
       ) : (
         <th>
